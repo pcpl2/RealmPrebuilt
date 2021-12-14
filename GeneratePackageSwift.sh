@@ -5,7 +5,7 @@ echo "import PackageDescription
 let realmVersion = \"$R_VER\"
 
 func buildTargets() -> [Target] {
-    let baseURL = \"https://github.com/pcpl2/RealmPrebuilt/releases/download/\(realmVersion)\"
+    let baseURL = \"https://github.com/pcpl2/RealmPrebuilt/releases/download/v\(realmVersion)\"
     
     let xcodeVersion = \"13\"
     let realmChecksum = \"$R_SHA\"

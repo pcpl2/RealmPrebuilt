@@ -3,7 +3,7 @@ import PackageDescription
 let realmVersion = "10.20.0"
 
 func buildTargets() -> [Target] {
-    let baseURL = "https://github.com/pcpl2/RealmPrebuilt/releases/download/\(realmVersion)"
+    let baseURL = "https://github.com/pcpl2/RealmPrebuilt/releases/download/v\(realmVersion)"
     
     let xcodeVersion = "13"
     let realmChecksum = "9200517da6fb77eb9ba99b4158f64c2458aa21d403a2a6b84fcaebb80deb88f6"

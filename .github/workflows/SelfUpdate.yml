@@ -41,6 +41,7 @@ jobs:
         name: Build Realm
         env: 
           REALM_XCODE_VERSION: '13.0'
+          REALM_SWIFT_VERSION: '5.5'
         run: |
           cd realm
           git checkout ${{ steps.rVer.outputs.realm_versionV }}

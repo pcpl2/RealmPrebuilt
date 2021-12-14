@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "import PackageDescription
+echo "// swift-tools-version:5.3
+import PackageDescription
 
 let realmVersion = \"$R_VER\"
 

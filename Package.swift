@@ -1,3 +1,4 @@
+// swift-tools-version:5.3
 import PackageDescription
 
 let realmVersion = "10.20.0"

@@ -37,11 +37,6 @@ jobs:
           repository: pcpl2/RealmPrebuilt
           excludes: prerelease, draft
 
-      - name: Tests
-        run: |
-          echo ${{ steps.rVer.outputs.realm_version }}
-          echo ${{ steps.realmPrebuiltR.outputs.release  }}
-
       - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
         name: Build Realm
         env: 
@@ -49,12 +44,12 @@ jobs:
         run: |
           cd realm
           git checkout ${{ steps.rVer.outputs.realm_versionV }}
-          ./build.sh xcframework ios
+          ./build.sh xcframework
           cd ..
           mkdir bRealm
           mkdir bRealmSwift
-          cp -R ./realm/build/ios/swift-13.0/Realm.xcframework ./bRealm
-          cp -R ./realm/build/ios/swift-13.0/RealmSwift.xcframework ./bRealmSwift
+          cp -R ./realm/build/Realm.xcframework ./bRealm
+          cp -R ./realm/build/RealmSwift.xcframework ./bRealmSwift
 
       - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
         name: Make Realm.xcframework.zip file

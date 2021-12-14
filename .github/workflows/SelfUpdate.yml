@@ -35,7 +35,7 @@ jobs:
       - if: steps.realmPrebuildR.outputs.release != steps.rVer.outputs.realm_version
         name: Build Realm
         env: 
-          - REALM_XCODE_VERSION: 13.0
+          REALM_XCODE_VERSION: 13.0
         run: |
           ./build.sh xcframework ios
 

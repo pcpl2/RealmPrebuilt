@@ -1,0 +1,2 @@
+# RealmPrebuilt [![Self-update](https://github.com/pcpl2/RealmPrebuilt/actions/workflows/SelfUpdate.yml/badge.svg)](https://github.com/pcpl2/RealmPrebuilt/actions/workflows/SelfUpdate.yml)
+Prebuilt [Realm](https://github.com/realm/realm-cocoa) xcframeworks to save build time

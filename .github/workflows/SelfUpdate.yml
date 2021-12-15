@@ -8,8 +8,50 @@ on:
  # schedule:
 #    - cron: "0 13 * * *" # every day at 1 pm
 jobs:
+  checkBuildIsRequired:
+    name: Check is require build new version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.realmR.outputs.release }}
+    steps:
+      - name: Getting latest realm version
+        id: realmR
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: realm/realm-cocoa
+          excludes: prerelease, draft
+
+      - name: Getting latest binares version
+        id: realmPrebuiltR
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: pcpl2/RealmPrebuilt
+          excludes: prerelease, draft
+
+      - if: steps.realmR.outputs.release == steps.realmPrebuiltR.outputs.release
+        name: cancelling
+        uses: andymckay/cancel-action@0.2
+
   build:
-    runs-on: macos-11
+    runs-on: ${{ matrix.os }}
+    needs: checkBuildIsRequired
+    strategy:
+      matrix:
+        include:
+        - xcode: '12.0.1'
+          os: macos-10.15
+        - xcode: '12.2'
+          os: macos-10.15
+        - xcode: '12.4'
+          os: macos-10.15
+        - xcode: '12.5.1'
+          os: macos-11
+        - xcode: '13.0'
+          os: macos-11
+        - xcode: '13.1'
+          os: macos-11
+        - xcode: '13.2'
+          os: macos-11
     steps:
       - name: Check out realm repo
         uses: actions/checkout@v2
@@ -23,69 +65,173 @@ jobs:
           repository: realm/realm-cocoa
           path: realm
 
-      - name: Get latest realm version
-        id: rVer
-        run: |
-           cd realm
-           echo "::set-output name=realm_version::$(./build.sh get-version)"
-           echo "::set-output name=realm_versionV::v$(./build.sh get-version)"
-
-      - name: Getting latest binares version
-        id: realmPrebuiltR
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          repository: pcpl2/RealmPrebuilt
-          excludes: prerelease, draft
-
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: Build Realm
+      - name: Build Realm
         env: 
-          REALM_XCODE_VERSION: '13.0'
-          REALM_SWIFT_VERSION: '5.5'
+          REALM_XCODE_VERSION: '${{ matrix.xcode }}'
         run: |
           cd realm
-          git checkout ${{ steps.rVer.outputs.realm_versionV }}
-          ./build.sh xcframework
+          git checkout ${{ needs.checkBuildIsRequired.outputs.version }}
+          ./build.sh xcframework ios 
           cd ..
           mkdir bRealm
           mkdir bRealmSwift
           cp -R ./realm/build/Realm.xcframework ./bRealm
           cp -R ./realm/build/RealmSwift.xcframework ./bRealmSwift
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: Make Realm.xcframework.zip file
+      - name: Make Realm.xcframework.zip file
         uses: papeloto/action-zip@v1
         with:
           files: ./bRealm
-          dest: Realm_13.xcframework.zip
+          dest: Realm_${{ matrix.xcode }}.xcframework.zip
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: Make RealmSwift.xcframework.zip file
+      - name: Make RealmSwift.xcframework.zip file
         uses: papeloto/action-zip@v1
         with:
           files: ./bRealmSwift
-          dest: RealmSwift_13.xcframework.zip
+          dest: RealmSwift_${{ matrix.xcode }}.xcframework.zip
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV 
-        name: Calculate checksum for files 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Realm_${{ matrix.xcode }}.xcframework-art
+          path: Realm_${{ matrix.xcode }}.xcframework.zip
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: RealmSwift_${{ matrix.xcode }}.xcframework-art
+          path: RealmSwift_${{ matrix.xcode }}.xcframework.zip
+          retention-days: 1
+
+#      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
+#        name: Create release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ steps.rVer.outputs.realm_versionV }}
+#          release_name: ${{ steps.rVer.outputs.realm_versionV }}
+#          draft: false
+#          prerelease: false
+
+#      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
+#        name: Upload Realm_13.xcframework.zip assets
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_name: Realm_13.xcframework.zip
+#          asset_path: ${{ github.workspace }}/Realm_13.xcframework.zip
+#          asset_content_type: application/octet-stream
+
+#      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
+#        name: Upload RealmSwift_13.xcframework.zip assets
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_name: RealmSwift_13.xcframework.zip
+#          asset_path: ${{ github.workspace }}/RealmSwift_13.xcframework.zip
+#          asset_content_type: application/octet-stream
+
+  publish:
+    needs: [checkBuildIsRequired, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out builder repo
+        uses: actions/checkout@v2
+        with:
+          path: main
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ./
+
+      - name: Move files
+        run: |
+            mv Realm_12.0.1.xcframework-art/Realm_12.0.1.xcframework.zip ./Realm_12.0.1.xcframework.zip
+            mv RealmSwift_12.0.1.xcframework-art/RealmSwift_12.0.1.xcframework.zip ./RealmSwift_12.0.1.xcframework.zip
+
+            mv Realm_12.2.xcframework-art/Realm_12.2.xcframework.zip ./Realm_12.2.xcframework.zip
+            mv RealmSwift_12.2.xcframework-art/RealmSwift_12.2.xcframework.zip ./RealmSwift_12.2.xcframework.zip
+
+            mv Realm_12.4.xcframework-art/Realm_12.4.xcframework.zip ./Realm_12.4.xcframework.zip
+            mv RealmSwift_12.4.xcframework-art/RealmSwift_12.4.xcframework.zip ./RealmSwift_12.4.xcframework.zip
+
+            mv Realm_12.5.1.xcframework-art/Realm_12.5.1.xcframework.zip ./Realm_12.5.1.xcframework.zip
+            mv RealmSwift_12.5.1.xcframework-art/RealmSwift_12.5.1.xcframework.zip ./RealmSwift_12.5.1.xcframework.zip
+
+            mv Realm_13.0.xcframework-art/Realm_13.0.xcframework.zip ./Realm_13.0.xcframework.zip
+            mv RealmSwift_13.0.xcframework-art/RealmSwift_13.0.xcframework.zip ./RealmSwift_13.0.xcframework.zip
+
+            mv Realm_13.1.xcframework-art/Realm_13.1.xcframework.zip ./Realm_13.1.xcframework.zip
+            mv RealmSwift_13.1.xcframework-art/RealmSwift_13.1.xcframework.zip ./RealmSwift_13.1.xcframework.zip
+            
+            mv Realm_13.2.xcframework-art/Realm_13.2.xcframework.zip ./Realm_13.2.xcframework.zip
+            mv RealmSwift_13.2.xcframework-art/RealmSwift_13.2.xcframework.zip ./RealmSwift_13.2.xcframework.zip
+
+      - name: Display structure of downloaded files
+        run: |
+          ls -R
+          ls -al
+
+      - name: Calculate checksum for files 
         id: rSha
         run: |
-           echo "::set-output name=r_sha::$(shasum -a 256 Realm_13.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_sha::$(shasum -a 256 RealmSwift_13.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=r_1201_sha::$(sha256sum Realm_12.0.1.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_1201_sha::$(sha256sum RealmSwift_12.0.1.xcframework.zip | grep -o '^\S*')"
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: Generate Package.swift
+           echo "::set-output name=r_122_sha::$(sha256sum Realm_12.2.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_122_sha::$(sha256sum RealmSwift_12.2.xcframework.zip | grep -o '^\S*')"
+
+           echo "::set-output name=r_124_sha::$(sha256sum Realm_12.4.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_124_sha::$(sha256sum RealmSwift_12.4.xcframework.zip | grep -o '^\S*')"
+
+           echo "::set-output name=r_1251_sha::$(sha256sum Realm_12.5.1.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_1251_sha::$(sha256sum RealmSwift_12.5.1.xcframework.zip | grep -o '^\S*')"
+
+           echo "::set-output name=r_130_sha::$(sha256sum Realm_13.0.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_130_sha::$(sha256sum RealmSwift_13.0.xcframework.zip | grep -o '^\S*')"
+
+           echo "::set-output name=r_131_sha::$(sha256sum Realm_13.1.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_131_sha::$(sha256sum RealmSwift_13.1.xcframework.zip | grep -o '^\S*')"
+
+           echo "::set-output name=r_132_sha::$(sha256sum Realm_13.2.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_132_sha::$(sha256sum RealmSwift_13.2.xcframework.zip | grep -o '^\S*')"
+
+      - name: Generate Package.swift
         env: 
-          R_VER: '${{ steps.rVer.outputs.realm_version }}'
-          R_SHA: '${{ steps.rSha.outputs.r_sha }}'
-          RS_SHA: '${{ steps.rSha.outputs.rs_sha }}'
+          R_VER: '${{ needs.checkBuildIsRequired.outputs.version }}'
+
+          R_1201_SHA: '${{ steps.rSha.outputs.r_1201_sha }}'
+          RS_1201_SHA: '${{ steps.rSha.outputs.rs_1201_sha }}'
+
+          R_122_SHA: '${{ steps.rSha.outputs.r_122_sha }}'
+          RS_122_SHA: '${{ steps.rSha.outputs.rs_122_sha }}'
+
+          R_124_SHA: '${{ steps.rSha.outputs.r_124_sha }}'
+          RS_124_SHA: '${{ steps.rSha.outputs.rs_124_sha }}'
+
+          R_1251_SHA: '${{ steps.rSha.outputs.r_1251_sha }}'
+          RS_1251_SHA: '${{ steps.rSha.outputs.rs_1251_sha }}'
+
+          R_130_SHA: '${{ steps.rSha.outputs.r_130_sha }}'
+          RS_130_SHA: '${{ steps.rSha.outputs.rs_130_sha }}'
+
+          R_131_SHA: '${{ steps.rSha.outputs.r_131_sha }}'
+          RS_131_SHA: '${{ steps.rSha.outputs.rs_131_sha }}'
+
+          R_132_SHA: '${{ steps.rSha.outputs.r_132_sha }}'
+          RS_132_SHA: '${{ steps.rSha.outputs.rs_132_sha }}'
         run: |
           cd main
           sudo chmod +x GeneratePackageSwift.sh
           ./GeneratePackageSwift.sh
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: make commit with new Package.swift
+      - name: make commit with new Package.swift
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Updated realm version to ${{ steps.rVer.outputs.realm_versionV }}
@@ -93,50 +239,42 @@ jobs:
           add_options: '-f'
           file_pattern: '*.swift'
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        uses: actions/upload-artifact@v2
-        with:
-          name: Realm_13.xcframework.zip
-          path: Realm_13.xcframework.zip
-          retention-days: 1
-
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        uses: actions/upload-artifact@v2
-        with:
-          name: RealmSwift_13.xcframework.zip
-          path: RealmSwift_13.xcframework.zip
-          retention-days: 1
-
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: Create release
+      - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.rVer.outputs.realm_versionV }}
-          release_name: ${{ steps.rVer.outputs.realm_versionV }}
+          tag_name: '${{ needs.checkBuildIsRequired.outputs.version }}'
+          release_name: '${{ needs.checkBuildIsRequired.outputs.version }}'
           draft: false
           prerelease: false
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: Upload Realm_13.xcframework.zip assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: Realm_13.xcframework.zip
-          asset_path: ${{ github.workspace }}/Realm_13.xcframework.zip
-          asset_content_type: application/octet-stream
+          tag_name: '${{ needs.checkBuildIsRequired.outputs.version }}'
+          name: '${{ needs.checkBuildIsRequired.outputs.version }}'
+          body: ""
+          generate_release_notes: false
+          files: |
+            ./Realm_12.0.1.xcframework.zip
+            ./RealmSwift_12.0.1.xcframework.zip
 
-      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-        name: Upload RealmSwift_13.xcframework.zip assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: RealmSwift_13.xcframework.zip
-          asset_path: ${{ github.workspace }}/RealmSwift_13.xcframework.zip
-          asset_content_type: application/octet-stream
+            ./Realm_12.2.xcframework.zip
+            ./RealmSwift_12.2.xcframework.zip 
+
+            ./Realm_12.4.xcframework.zip
+            ./RealmSwift_12.4.xcframework.zip 
+
+            ./Realm_12.5.1.xcframework.zip
+            ./RealmSwift_12.5.1.xcframework.zip
+
+            ./Realm_13.0.xcframework.zip
+            ./RealmSwift_13.0.xcframework.zip 
+
+            ./Realm_13.1.xcframework.zip
+            ./RealmSwift_13.1.xcframework.zip 
+
+            ./Realm_13.2.xcframework.zip
+            ./RealmSwift_13.2.xcframework.zip 

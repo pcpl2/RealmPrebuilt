@@ -102,40 +102,6 @@ jobs:
           path: RealmSwift_${{ matrix.xcode }}.xcframework.zip
           retention-days: 1
 
-#      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-#        name: Create release
-#        id: create_release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ steps.rVer.outputs.realm_versionV }}
-#          release_name: ${{ steps.rVer.outputs.realm_versionV }}
-#          draft: false
-#          prerelease: false
-
-#      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-#        name: Upload Realm_13.xcframework.zip assets
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_name: Realm_13.xcframework.zip
-#          asset_path: ${{ github.workspace }}/Realm_13.xcframework.zip
-#          asset_content_type: application/octet-stream
-
-#      - if: steps.realmPrebuiltR.outputs.release != steps.rVer.outputs.realm_versionV
-#        name: Upload RealmSwift_13.xcframework.zip assets
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_name: RealmSwift_13.xcframework.zip
-#          asset_path: ${{ github.workspace }}/RealmSwift_13.xcframework.zip
-#          asset_content_type: application/octet-stream
-
   publish:
     needs: [checkBuildIsRequired, build]
     runs-on: ubuntu-latest
@@ -234,7 +200,7 @@ jobs:
       - name: make commit with new Package.swift
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Updated realm version to ${{ steps.rVer.outputs.realm_versionV }}
+          commit_message: Updated realm version to ${{ needs.checkBuildIsRequired.outputs.version }}
           repository: ./main
           add_options: '-f'
           file_pattern: '*.swift'

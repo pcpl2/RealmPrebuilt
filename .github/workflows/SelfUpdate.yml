@@ -204,6 +204,10 @@ jobs:
           repository: ./main
           add_options: '-f'
           file_pattern: '*.swift'
+          
+      - name : Wait 30 seconds 
+        run : sleep 30s 
+        shell : bash
 
       - name: Create release
         id: create_release

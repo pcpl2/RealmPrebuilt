@@ -1,12 +1,12 @@
 name: Self-update
 on:
-  workflow_dispatch:
-      inputs:
-        version:
-          description: 'Not uset (only for test)'
-          required: false
- # schedule:
-#    - cron: "0 13 * * *" # every day at 1 pm
+  #workflow_dispatch:
+  #    inputs:
+  #      version:
+  #        description: 'Not uset (only for test)'
+  #        required: false
+  schedule:
+    - cron: "0 13 * * *" # every day at 1 pm
 jobs:
   checkBuildIsRequired:
     name: Check is require build new version

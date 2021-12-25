@@ -209,16 +209,11 @@ jobs:
         run : sleep 30s 
         shell : bash
 
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: '${{ needs.checkBuildIsRequired.outputs.version }}'
-          release_name: '${{ needs.checkBuildIsRequired.outputs.version }}'
-          draft: false
-          prerelease: false
+      - name: Set outputs
+        id: vars
+        run: |
+          cd main
+          echo "::set-output name=sha::$(git rev-parse HEAD)"
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -226,6 +221,8 @@ jobs:
           tag_name: '${{ needs.checkBuildIsRequired.outputs.version }}'
           name: '${{ needs.checkBuildIsRequired.outputs.version }}'
           body: ""
+          repository: 'pcpl2/RealmPrebuilt'
+          target_commitish: ${{ steps.vars.outputs.sha }}
           generate_release_notes: false
           files: |
             ./Realm_12.0.1.xcframework.zip

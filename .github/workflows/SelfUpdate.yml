@@ -79,13 +79,13 @@ jobs:
           cp -R ./realm/build/RealmSwift.xcframework ./bRealmSwift
 
       - name: Make Realm.xcframework.zip file
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
           files: ./bRealm
           dest: Realm_${{ matrix.xcode }}.xcframework.zip
 
       - name: Make RealmSwift.xcframework.zip file
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
           files: ./bRealmSwift
           dest: RealmSwift_${{ matrix.xcode }}.xcframework.zip

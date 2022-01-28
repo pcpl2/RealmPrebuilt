@@ -14,7 +14,7 @@ jobs:
         id: realmR
         uses: pozetroninc/github-action-get-latest-release@master
         with:
-          repository: realm/realm-cocoa
+          repository: realm/realm-swift
           excludes: prerelease, draft
 
       - name: Getting latest binares version
@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          repository: realm/realm-cocoa
+          repository: realm/realm-swift
           path: realm
 
       - name: Build Realm
@@ -67,7 +67,7 @@ jobs:
         run: |
           cd realm
           git checkout ${{ needs.checkBuildIsRequired.outputs.version }}
-          ./build.sh xcframework osx ios watchos tvos 
+          ./build.sh xcframework 
           cd ..
           mkdir bRealm
           mkdir bRealmSwift

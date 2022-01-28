@@ -1,10 +1,6 @@
 name: Self-update
 on:
-  #workflow_dispatch:
-  #    inputs:
-  #      version:
-  #        description: 'Not uset (only for test)'
-  #        required: false
+  workflow_dispatch:
   schedule:
     - cron: "0 13 * * *" # every day at 1 pm
 jobs:
@@ -71,7 +67,7 @@ jobs:
         run: |
           cd realm
           git checkout ${{ needs.checkBuildIsRequired.outputs.version }}
-          ./build.sh xcframework ios 
+          ./build.sh xcframework osx ios watchos tvos 
           cd ..
           mkdir bRealm
           mkdir bRealmSwift

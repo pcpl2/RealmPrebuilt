@@ -67,7 +67,7 @@ jobs:
         run: |
           cd realm
           git checkout ${{ needs.checkBuildIsRequired.outputs.version }}
-          ./build.sh xcframework 
+          ./build.sh xcframework ios 
           cd ..
           mkdir bRealm
           mkdir bRealmSwift

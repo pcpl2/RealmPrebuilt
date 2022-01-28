@@ -54,7 +54,7 @@ func buildTargets() -> [Target] {
 
 let package = Package(
     name: \"RealmPrebuilt\",
-    platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
+    platforms: [.iOS(.v13)],
     products: [
         .library(
             name: \"Realm\",

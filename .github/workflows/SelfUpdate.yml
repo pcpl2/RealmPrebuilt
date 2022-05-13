@@ -183,7 +183,7 @@ jobs:
         with:
           tag_name: '${{ needs.checkBuildIsRequired.outputs.version }}'
           name: '${{ needs.checkBuildIsRequired.outputs.version }}'
-          body: ""
+          body: "[Changelog of realm ${{ needs.checkBuildIsRequired.outputs.version }}](https://github.com/realm/realm-swift/releases/tag/${{ needs.checkBuildIsRequired.outputs.version }})"
           repository: 'pcpl2/RealmPrebuilt'
           target_commitish: ${{ steps.vars.outputs.sha }}
           generate_release_notes: false

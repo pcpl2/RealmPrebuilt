@@ -34,14 +34,6 @@ jobs:
     strategy:
       matrix:
         include:
-        - xcode: '12.0.1'
-          os: macos-10.15
-        - xcode: '12.2'
-          os: macos-10.15
-        - xcode: '12.4'
-          os: macos-10.15
-        - xcode: '12.5.1'
-          os: macos-11
         - xcode: '13.0'
           os: macos-11
         - xcode: '13.1'
@@ -116,18 +108,6 @@ jobs:
 
       - name: Move files
         run: |
-            mv Realm_12.0.1.xcframework-art/Realm_12.0.1.xcframework.zip ./Realm_12.0.1.xcframework.zip
-            mv RealmSwift_12.0.1.xcframework-art/RealmSwift_12.0.1.xcframework.zip ./RealmSwift_12.0.1.xcframework.zip
-
-            mv Realm_12.2.xcframework-art/Realm_12.2.xcframework.zip ./Realm_12.2.xcframework.zip
-            mv RealmSwift_12.2.xcframework-art/RealmSwift_12.2.xcframework.zip ./RealmSwift_12.2.xcframework.zip
-
-            mv Realm_12.4.xcframework-art/Realm_12.4.xcframework.zip ./Realm_12.4.xcframework.zip
-            mv RealmSwift_12.4.xcframework-art/RealmSwift_12.4.xcframework.zip ./RealmSwift_12.4.xcframework.zip
-
-            mv Realm_12.5.1.xcframework-art/Realm_12.5.1.xcframework.zip ./Realm_12.5.1.xcframework.zip
-            mv RealmSwift_12.5.1.xcframework-art/RealmSwift_12.5.1.xcframework.zip ./RealmSwift_12.5.1.xcframework.zip
-
             mv Realm_13.0.xcframework-art/Realm_13.0.xcframework.zip ./Realm_13.0.xcframework.zip
             mv RealmSwift_13.0.xcframework-art/RealmSwift_13.0.xcframework.zip ./RealmSwift_13.0.xcframework.zip
 
@@ -148,18 +128,6 @@ jobs:
       - name: Calculate checksum for files 
         id: rSha
         run: |
-           echo "::set-output name=r_1201_sha::$(sha256sum Realm_12.0.1.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_1201_sha::$(sha256sum RealmSwift_12.0.1.xcframework.zip | grep -o '^\S*')"
-
-           echo "::set-output name=r_122_sha::$(sha256sum Realm_12.2.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_122_sha::$(sha256sum RealmSwift_12.2.xcframework.zip | grep -o '^\S*')"
-
-           echo "::set-output name=r_124_sha::$(sha256sum Realm_12.4.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_124_sha::$(sha256sum RealmSwift_12.4.xcframework.zip | grep -o '^\S*')"
-
-           echo "::set-output name=r_1251_sha::$(sha256sum Realm_12.5.1.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_1251_sha::$(sha256sum RealmSwift_12.5.1.xcframework.zip | grep -o '^\S*')"
-
            echo "::set-output name=r_130_sha::$(sha256sum Realm_13.0.xcframework.zip | grep -o '^\S*')"
            echo "::set-output name=rs_130_sha::$(sha256sum RealmSwift_13.0.xcframework.zip | grep -o '^\S*')"
 
@@ -175,18 +143,6 @@ jobs:
       - name: Generate Package.swift
         env: 
           R_VER: '${{ needs.checkBuildIsRequired.outputs.version }}'
-
-          R_1201_SHA: '${{ steps.rSha.outputs.r_1201_sha }}'
-          RS_1201_SHA: '${{ steps.rSha.outputs.rs_1201_sha }}'
-
-          R_122_SHA: '${{ steps.rSha.outputs.r_122_sha }}'
-          RS_122_SHA: '${{ steps.rSha.outputs.rs_122_sha }}'
-
-          R_124_SHA: '${{ steps.rSha.outputs.r_124_sha }}'
-          RS_124_SHA: '${{ steps.rSha.outputs.rs_124_sha }}'
-
-          R_1251_SHA: '${{ steps.rSha.outputs.r_1251_sha }}'
-          RS_1251_SHA: '${{ steps.rSha.outputs.rs_1251_sha }}'
 
           R_130_SHA: '${{ steps.rSha.outputs.r_130_sha }}'
           RS_130_SHA: '${{ steps.rSha.outputs.rs_130_sha }}'
@@ -232,18 +188,6 @@ jobs:
           target_commitish: ${{ steps.vars.outputs.sha }}
           generate_release_notes: false
           files: |
-            ./Realm_12.0.1.xcframework.zip
-            ./RealmSwift_12.0.1.xcframework.zip
-
-            ./Realm_12.2.xcframework.zip
-            ./RealmSwift_12.2.xcframework.zip 
-
-            ./Realm_12.4.xcframework.zip
-            ./RealmSwift_12.4.xcframework.zip 
-
-            ./Realm_12.5.1.xcframework.zip
-            ./RealmSwift_12.5.1.xcframework.zip
-
             ./Realm_13.0.xcframework.zip
             ./RealmSwift_13.0.xcframework.zip 
 

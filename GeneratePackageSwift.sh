@@ -24,22 +24,6 @@ func buildTargets() -> [Target] {
     let xcodeVersion = \"13.0\"
     let realmChecksum = \"$R_130_SHA\"
     let realmSwiftChecksum = \"$RS_130_SHA\"
-    #elseif swift(>=5.4.2)
-    let xcodeVersion = \"12.5.1\"
-    let realmChecksum = \"$R_1251_SHA\"
-    let realmSwiftChecksum = \"$RS_1251_SHA\"
-    #elseif swift(>=5.3.2)
-    let xcodeVersion = \"12.4\"
-    let realmChecksum = \"$R_124_SHA\"
-    let realmSwiftChecksum = \"$RS_124_SHA\"
-    #elseif swift(>=5.3.1)
-    let xcodeVersion = \"12.2\"
-    let realmChecksum = \"$R_122_SHA\"
-    let realmSwiftChecksum = \"$RS_122_SHA\"
-    #elseif swift(>=5.3)
-    let xcodeVersion = \"12.0.1\"
-    let realmChecksum = \"$R_1201_SHA\"
-    let realmSwiftChecksum = \"$RS_1201_SHA\"
     #endif
     
     return [

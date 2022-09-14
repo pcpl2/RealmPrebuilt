@@ -13,7 +13,7 @@ jobs:
     name: Check is require build new version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.realmR.outputs.release }}
+      version: ${{ steps.vars.outputs.version }}
     steps:
       - name: Getting latest realm version
         id: realmR
@@ -33,6 +33,10 @@ jobs:
       - if: steps.realmR.outputs.release == steps.realmPrebuiltR.outputs.release || github.event.inputs.realmVerison == steps.realmPrebuiltR.outputs.release 
         name: cancelling
         uses: andymckay/cancel-action@0.2
+
+      - name: Prepare outputs
+        id: vars
+        run: echo "::set-output name=version::${{ steps.realmR.outputs.release }}${{ github.event.inputs.realmVerison }}"
 
   build:
     runs-on: ${{ matrix.os }}

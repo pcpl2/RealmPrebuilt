@@ -8,7 +8,11 @@ let realmVersion = \"$R_VER\"
 func buildTargets() -> [Target] {
     let baseURL = \"https://github.com/pcpl2/RealmPrebuilt/releases/download/\(realmVersion)\"
 
-    #if swift(>=5.6)
+    #if swift(>=5.7)
+    let xcodeVersion = \"14.0\"
+    let realmChecksum = \"$R_140_SHA\"
+    let realmSwiftChecksum = \"$RS_140_SHA\"
+    #elseif swift(>=5.6)
     let xcodeVersion = \"13.3\"
     let realmChecksum = \"$R_133_SHA\"
     let realmSwiftChecksum = \"$RS_133_SHA\"

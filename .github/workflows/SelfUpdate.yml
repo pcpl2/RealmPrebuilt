@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 13 * * *" # every day at 1 pm
+
 jobs:
   checkBuildIsRequired:
     name: Check is require build new version
@@ -38,9 +39,11 @@ jobs:
           os: macos-11
         - xcode: '13.1'
           os: macos-11
-        - xcode: '13.2'
+        - xcode: '13.2.1'
           os: macos-11
-        - xcode: '13.3'
+        - xcode: '13.3.1'
+          os: macos-12
+        - xcode: '14.0'
           os: macos-12
     steps:
       - name: Check out realm repo
@@ -114,11 +117,14 @@ jobs:
             mv Realm_13.1.xcframework-art/Realm_13.1.xcframework.zip ./Realm_13.1.xcframework.zip
             mv RealmSwift_13.1.xcframework-art/RealmSwift_13.1.xcframework.zip ./RealmSwift_13.1.xcframework.zip
             
-            mv Realm_13.2.xcframework-art/Realm_13.2.xcframework.zip ./Realm_13.2.xcframework.zip
-            mv RealmSwift_13.2.xcframework-art/RealmSwift_13.2.xcframework.zip ./RealmSwift_13.2.xcframework.zip
+            mv Realm_13.2.1.xcframework-art/Realm_13.2.1.xcframework.zip ./Realm_13.2.1.xcframework.zip
+            mv RealmSwift_13.2.1.xcframework-art/RealmSwift_13.2.1.xcframework.zip ./RealmSwift_13.2.1.xcframework.zip
 
-            mv Realm_13.3.xcframework-art/Realm_13.3.xcframework.zip ./Realm_13.3.xcframework.zip
-            mv RealmSwift_13.3.xcframework-art/RealmSwift_13.3.xcframework.zip ./RealmSwift_13.3.xcframework.zip
+            mv Realm_13.3.1.xcframework-art/Realm_13.3.1.xcframework.zip ./Realm_13.3.1.xcframework.zip
+            mv RealmSwift_13.3.1.xcframework-art/RealmSwift_13.3.1.xcframework.zip ./RealmSwift_13.3.1.xcframework.zip
+
+            mv Realm_14.0.xcframework-art/Realm_14.0.xcframework.zip ./Realm_14.0.xcframework.zip
+            mv RealmSwift_14.0.xcframework-art/RealmSwift_14.0.xcframework.zip ./RealmSwift_14.0.xcframework.zip
 
       - name: Display structure of downloaded files
         run: |
@@ -134,11 +140,14 @@ jobs:
            echo "::set-output name=r_131_sha::$(sha256sum Realm_13.1.xcframework.zip | grep -o '^\S*')"
            echo "::set-output name=rs_131_sha::$(sha256sum RealmSwift_13.1.xcframework.zip | grep -o '^\S*')"
 
-           echo "::set-output name=r_132_sha::$(sha256sum Realm_13.2.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_132_sha::$(sha256sum RealmSwift_13.2.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=r_132_sha::$(sha256sum Realm_13.2.1.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_132_sha::$(sha256sum RealmSwift_13.2.1.xcframework.zip | grep -o '^\S*')"
 
-           echo "::set-output name=r_133_sha::$(sha256sum Realm_13.3.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_133_sha::$(sha256sum RealmSwift_13.3.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=r_133_sha::$(sha256sum Realm_13.3.1.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_133_sha::$(sha256sum RealmSwift_13.3.1.xcframework.zip | grep -o '^\S*')"
+
+           echo "::set-output name=r_140_sha::$(sha256sum Realm_14.0.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_140_sha::$(sha256sum RealmSwift_14.0.xcframework.zip | grep -o '^\S*')"
 
       - name: Generate Package.swift
         env: 
@@ -155,6 +164,9 @@ jobs:
 
           R_133_SHA: '${{ steps.rSha.outputs.r_133_sha }}'
           RS_133_SHA: '${{ steps.rSha.outputs.rs_133_sha }}'
+
+          R_140_SHA: '${{ steps.rSha.outputs.r_140_sha }}'
+          RS_140_SHA: '${{ steps.rSha.outputs.rs_140_sha }}'
         run: |
           cd main
           sudo chmod +x GeneratePackageSwift.sh
@@ -194,8 +206,11 @@ jobs:
             ./Realm_13.1.xcframework.zip
             ./RealmSwift_13.1.xcframework.zip 
 
-            ./Realm_13.2.xcframework.zip
-            ./RealmSwift_13.2.xcframework.zip 
+            ./Realm_13.2.1.xcframework.zip
+            ./RealmSwift_13.2.1.xcframework.zip 
 
-            ./Realm_13.3.xcframework.zip
-            ./RealmSwift_13.3.xcframework.zip 
+            ./Realm_13.3.1.xcframework.zip
+            ./RealmSwift_13.3.1.xcframework.zip 
+
+            ./Realm_14.0.xcframework.zip
+            ./RealmSwift_14.0.xcframework.zip 

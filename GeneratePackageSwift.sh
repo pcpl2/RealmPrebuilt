@@ -13,11 +13,11 @@ func buildTargets() -> [Target] {
     let realmChecksum = \"$R_140_SHA\"
     let realmSwiftChecksum = \"$RS_140_SHA\"
     #elseif swift(>=5.6)
-    let xcodeVersion = \"13.3\"
+    let xcodeVersion = \"13.3.1\"
     let realmChecksum = \"$R_133_SHA\"
     let realmSwiftChecksum = \"$RS_133_SHA\"
     #elseif swift(>=5.5.2)
-    let xcodeVersion = \"13.2\"
+    let xcodeVersion = \"13.2.1\"
     let realmChecksum = \"$R_132_SHA\"
     let realmSwiftChecksum = \"$RS_132_SHA\"
     #elseif swift(>=5.5.1)

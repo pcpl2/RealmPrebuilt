@@ -1,8 +1,12 @@
 name: Self-update
 on:
   workflow_dispatch:
+    inputs:
+      realmVerison:
+        description: 'Enter realm version to build'
+        required: false
   schedule:
-    - cron: "0 13 * * *" # every day at 1 pm
+    - cron: "0 13 * * *" # every day at 1 pm 
 
 jobs:
   checkBuildIsRequired:
@@ -13,6 +17,7 @@ jobs:
     steps:
       - name: Getting latest realm version
         id: realmR
+        if: github.event.inputs.realmVerison == ''
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           repository: realm/realm-swift
@@ -25,7 +30,7 @@ jobs:
           repository: pcpl2/RealmPrebuilt
           excludes: prerelease, draft
 
-      - if: steps.realmR.outputs.release == steps.realmPrebuiltR.outputs.release
+      - if: steps.realmR.outputs.release == steps.realmPrebuiltR.outputs.release || github.event.inputs.realmVerison == steps.realmPrebuiltR.outputs.release 
         name: cancelling
         uses: andymckay/cancel-action@0.2
 

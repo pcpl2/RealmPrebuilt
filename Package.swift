@@ -1,31 +1,31 @@
 // swift-tools-version:5.3
 import PackageDescription
 
-let realmVersion = "v10.27.0"
+let realmVersion = "v10.28.0"
 
 func buildTargets() -> [Target] {
     let baseURL = "https://github.com/pcpl2/RealmPrebuilt/releases/download/\(realmVersion)"
 
     #if swift(>=5.7)
     let xcodeVersion = "14.0"
-    let realmChecksum = "caec2706de7245e6d7511b7549a9a72cd56eb471f9fa6aee16f9787c9e696793"
-    let realmSwiftChecksum = "8ea15c36c46d649ba2b25a84a2aa5f843e7f395df6819b6790753fb21ad034e9"
+    let realmChecksum = "4340bf1bf76ed0b0f6991a3ac8594719e6cb7631ec923d56f93ae1b5c6de9f36"
+    let realmSwiftChecksum = "fe78bcabb021fef4070ff75edbb61f7d94308848fa762b0dc889fb49a45727d9"
     #elseif swift(>=5.6)
     let xcodeVersion = "13.3.1"
-    let realmChecksum = "aa0147745da45810b4d9ee1f0d9e987bd65ff98b89b99e355f1574b2e7cfeca4"
-    let realmSwiftChecksum = "8538788f60eb7583a1738801386769b5c045251da752c2abeac0bfda1fdd85b8"
+    let realmChecksum = "02f275a8ee609f4422c4108fa05371c89f71a99ac42227be128308d7cc9fc689"
+    let realmSwiftChecksum = "2c9808bc5bbb7a6ba559c47511a6a75dc67ab543dbb4d72c5704d2547ddbb10f"
     #elseif swift(>=5.5.2)
     let xcodeVersion = "13.2.1"
-    let realmChecksum = "76c0fc25990d3ebe01a0321713e01ad5dbcd3f783b4d944211b1ecf9dc86dc92"
-    let realmSwiftChecksum = "78965080ebd96c79d9a5b0dabccd7b96951c2839c50c98e243f70f8da11bc274"
+    let realmChecksum = "cdfa72bed65566c9d75c1a0313557c8c90ac9da61d74b5012ee46fc81fafa639"
+    let realmSwiftChecksum = "930bb1730832dd295cb1903739fcb8c191ef17750d98eaf41cbf55add71ee4d1"
     #elseif swift(>=5.5.1)
     let xcodeVersion = "13.1"
-    let realmChecksum = "b47932e5483a96a6a5c5001859fc76ff667f0c051064f4962f3e80b98105e4d3"
-    let realmSwiftChecksum = "ddcaee9b7bc79cba942d96fa9d75dfa9f5b16962ebd8cb7cd3890c8280c092a8"
+    let realmChecksum = "69cc8bdc5b421bc9f130cf50088929ba0c95327fba7ed81cddd0e24d88c85b1b"
+    let realmSwiftChecksum = "68b83e604886cc4a62a30f0d37e9077a1513d1225f08fa7fd521bc4744c5e7cf"
     #elseif swift(>=5.5)
     let xcodeVersion = "13.0"
-    let realmChecksum = "45a40c880b4e6a0e863d5ae02f5a1dd7c6a06cce4f13923403b7cef67ba2af76"
-    let realmSwiftChecksum = "34f09a4654a66f9ac5813446642d09d497a15c40c89cfe2228c9bd27cbb214f7"
+    let realmChecksum = "88ebb4e2101ed20987cbcfb1fa5975ec75b1a659953e844f67b91e9472c873f3"
+    let realmSwiftChecksum = "eb17456e656d26361f31aec4e3614e600714e3c248dfd4b1c8b1cbe27d172be2"
     #endif
     
     return [

@@ -54,6 +54,8 @@ jobs:
           os: macos-12
         - xcode: '14.0'
           os: macos-12
+        - xcode: '14.1'
+          os: macos-12
     steps:
       - name: Check out realm repo
         uses: actions/checkout@v2
@@ -135,6 +137,9 @@ jobs:
             mv Realm_14.0.xcframework-art/Realm_14.0.xcframework.zip ./Realm_14.0.xcframework.zip
             mv RealmSwift_14.0.xcframework-art/RealmSwift_14.0.xcframework.zip ./RealmSwift_14.0.xcframework.zip
 
+            mv Realm_14.1.xcframework-art/Realm_14.1.xcframework.zip ./Realm_14.1.xcframework.zip
+            mv RealmSwift_14.1.xcframework-art/RealmSwift_14.1.xcframework.zip ./RealmSwift_14.1.xcframework.zip
+
       - name: Display structure of downloaded files
         run: |
           ls -R
@@ -158,6 +163,9 @@ jobs:
            echo "::set-output name=r_140_sha::$(sha256sum Realm_14.0.xcframework.zip | grep -o '^\S*')"
            echo "::set-output name=rs_140_sha::$(sha256sum RealmSwift_14.0.xcframework.zip | grep -o '^\S*')"
 
+           echo "::set-output name=r_141_sha::$(sha256sum Realm_14.1.xcframework.zip | grep -o '^\S*')"
+           echo "::set-output name=rs_141_sha::$(sha256sum RealmSwift_14.1.xcframework.zip | grep -o '^\S*')"
+
       - name: Generate Package.swift
         env: 
           R_VER: '${{ needs.checkBuildIsRequired.outputs.version }}'
@@ -176,6 +184,9 @@ jobs:
 
           R_140_SHA: '${{ steps.rSha.outputs.r_140_sha }}'
           RS_140_SHA: '${{ steps.rSha.outputs.rs_140_sha }}'
+
+          R_141_SHA: '${{ steps.rSha.outputs.r_141_sha }}'
+          RS_141_SHA: '${{ steps.rSha.outputs.rs_141_sha }}'
         run: |
           cd main
           sudo chmod +x GeneratePackageSwift.sh
@@ -223,3 +234,6 @@ jobs:
 
             ./Realm_14.0.xcframework.zip
             ./RealmSwift_14.0.xcframework.zip 
+
+            ./Realm_14.1.xcframework.zip
+            ./RealmSwift_14.1.xcframework.zip 

@@ -36,7 +36,7 @@ jobs:
 
       - name: Prepare outputs
         id: vars
-        run: echo "::set-output name=version::${{ steps.realmR.outputs.release }}${{ github.event.inputs.realmVerison }}"
+        run: echo "version=${{ steps.realmR.outputs.release }}${{ github.event.inputs.realmVerison }}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ${{ matrix.os }}
@@ -148,23 +148,23 @@ jobs:
       - name: Calculate checksum for files 
         id: rSha
         run: |
-           echo "::set-output name=r_130_sha::$(sha256sum Realm_13.0.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_130_sha::$(sha256sum RealmSwift_13.0.xcframework.zip | grep -o '^\S*')"
+           echo "r_130_sha=$(sha256sum Realm_13.0.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
+           echo "rs_130_sha=$(sha256sum RealmSwift_13.0.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
 
-           echo "::set-output name=r_131_sha::$(sha256sum Realm_13.1.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_131_sha::$(sha256sum RealmSwift_13.1.xcframework.zip | grep -o '^\S*')"
+           echo "r_131_sha=$(sha256sum Realm_13.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
+           echo "rs_131_sha=$(sha256sum RealmSwift_13.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
 
-           echo "::set-output name=r_132_sha::$(sha256sum Realm_13.2.1.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_132_sha::$(sha256sum RealmSwift_13.2.1.xcframework.zip | grep -o '^\S*')"
+           echo "r_132_sha=$(sha256sum Realm_13.2.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
+           echo "rs_132_sha=$(sha256sum RealmSwift_13.2.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
 
-           echo "::set-output name=r_133_sha::$(sha256sum Realm_13.3.1.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_133_sha::$(sha256sum RealmSwift_13.3.1.xcframework.zip | grep -o '^\S*')"
+           echo "r_133_sha=$(sha256sum Realm_13.3.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
+           echo "rs_133_sha=$(sha256sum RealmSwift_13.3.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
 
-           echo "::set-output name=r_140_sha::$(sha256sum Realm_14.0.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_140_sha::$(sha256sum RealmSwift_14.0.xcframework.zip | grep -o '^\S*')"
-
-           echo "::set-output name=r_141_sha::$(sha256sum Realm_14.1.xcframework.zip | grep -o '^\S*')"
-           echo "::set-output name=rs_141_sha::$(sha256sum RealmSwift_14.1.xcframework.zip | grep -o '^\S*')"
+           echo "r_140_sha=$(sha256sum Realm_14.0.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
+           echo "rs_140_sha=$(sha256sum RealmSwift_14.0.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
+           
+           echo "r_141_sha=$(sha256sum Realm_14.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
+           echo "rs_141_sha=$(sha256sum RealmSwift_14.1.xcframework.zip | grep -o '^\S*')" >> $GITHUB_OUTPUT
 
       - name: Generate Package.swift
         env: 
@@ -208,7 +208,7 @@ jobs:
         id: vars
         run: |
           cd main
-          echo "::set-output name=sha::$(git rev-parse HEAD)"
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Release
         uses: softprops/action-gh-release@v1
